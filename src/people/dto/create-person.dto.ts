@@ -3,4 +3,5 @@ export type CreatePersonDto = {
   documentNumber: string;
   createBy: string;
   updatedBy: string;
+  clientId?: number;
 };

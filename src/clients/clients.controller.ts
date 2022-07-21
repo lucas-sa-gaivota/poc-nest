@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import { getRedis } from 'src/infra/redis/redis.service';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -21,13 +22,25 @@ export class ClientsController {
   }
 
   @Get()
-  findAll() {
-    return this.clientsService.findAll();
+  async findAll() {
+    const clientsRedis = await getRedis(`client-all`);
+
+    if (clientsRedis) {
+      return JSON.parse(clientsRedis);
+    } else {
+      return this.clientsService.findAll();
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clientsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const clientRedis = await getRedis(`client-${id}`);
+
+    if (clientRedis) {
+      return JSON.parse(clientRedis);
+    } else {
+      return this.clientsService.findOne(+id);
+    }
   }
 
   @Patch(':id')

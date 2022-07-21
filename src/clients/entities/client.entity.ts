@@ -5,20 +5,23 @@ export class Client {
   private updatedAt: Date;
   private createBy: string;
   private updatedBy: string;
+  private people: number[];
+  private locals: number[];
 
   constructor(
     name: string,
     clientTypeId: string,
     createBy: string,
     updatedBy: string,
-    createdAt?: Date,
+    people?: number[],
+    locals?: number[],
   ) {
     this.name = name;
     this.clientTypeId = clientTypeId;
-    this.createdAt = createdAt ? new Date(createdAt) : new Date();
-    this.updatedAt = new Date();
     this.createBy = createBy;
     this.updatedBy = updatedBy;
+    this.people = people;
+    this.locals = locals;
   }
 
   get() {

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/infra/prisma/prisma.service';
+import { setRedis } from 'src/infra/redis/redis.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from './entities/client.entity';
@@ -14,16 +15,20 @@ export class ClientsService {
       createClientDto.clientTypeId,
       createClientDto.createBy,
       createClientDto.updatedBy,
+      createClientDto.people,
+      createClientDto.locals,
     ).get();
 
     const clientCreated = await this.prismaService.client.create({
       data: client,
     });
+    await setRedis(`client-all`, null);
     return clientCreated;
   }
 
   async findAll() {
     const clients = await this.prismaService.client.findMany();
+    await setRedis('client-all', JSON.stringify(clients));
     return clients;
   }
 
@@ -34,12 +39,12 @@ export class ClientsService {
       },
     });
 
+    await setRedis(`client-${id}`, JSON.stringify(client));
     return client;
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {
     const client = await this.findOne(id);
-
     if (!client) {
       throw new Error(`Client not found`);
     }
@@ -49,7 +54,6 @@ export class ClientsService {
       updateClientDto.clientTypeId,
       client.createBy,
       updateClientDto.updatedBy,
-      client.createdAt,
     ).get();
 
     const clients = await this.prismaService.client.updateMany({
@@ -63,6 +67,7 @@ export class ClientsService {
         updatedAt: newClientData.updatedAt,
       },
     });
+    await setRedis(`client-${id}`, null);
     return clients;
   }
 

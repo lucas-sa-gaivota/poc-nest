@@ -3,4 +3,5 @@ export type UpdatePersonDto = {
   name: string;
   documentNumber: string;
   updatedBy: string;
+  clientId?: number;
 };

@@ -8,37 +8,36 @@ datasource db {
 }
 
 model client {
-  id              Int       @default(autoincrement()) @id
-  name            String
-  clientTypeId    String
-  createdAt        DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  createBy        String
-  updatedBy       String
-  people          people[] 
-  locals          local[]
+  id           Int      @id @default(autoincrement())
+  name         String
+  clientTypeId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createBy     String
+  updatedBy    String
+  people       people[]
+  locals       local[]
 }
 
-
 model people {
-  id                Int       @default(autoincrement()) @id
-  name              String
-  documentNumber    String
-  createdAt          DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  createBy          String
-  updatedBy         String
-  clientId          Int?
-  client            client?   @relation(fields: [clientId], references: [id])
+  id             Int      @id @default(autoincrement())
+  name           String
+  documentNumber String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createBy       String
+  updatedBy      String
+  clientId       Int?
+  client         client?  @relation(fields: [clientId], references: [id])
 }
 
 model local {
-  id            Int       @default(autoincrement()) @id
-  name          String
-  createdAt      DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  createBy      String
-  updatedBy     String
-  clientId      Int?
-  client        client?   @relation(fields: [clientId], references: [id])
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createBy  String
+  updatedBy String
+  clientId  Int?
+  client    client?  @relation(fields: [clientId], references: [id])
 }

@@ -10,6 +10,7 @@ import {
 import { LocalsService } from './locals.service';
 import { CreateLocalDto } from './dto/create-local.dto';
 import { UpdateLocalDto } from './dto/update-local.dto';
+import { getRedis } from 'src/infra/redis/redis.service';
 
 @Controller('locals')
 export class LocalsController {
@@ -21,13 +22,23 @@ export class LocalsController {
   }
 
   @Get()
-  findAll() {
-    return this.localsService.findAll();
+  async findAll() {
+    const localsRedis = await getRedis(`local-all`);
+    if (localsRedis) {
+      return JSON.parse(localsRedis);
+    } else {
+      return this.localsService.findAll();
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.localsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const localsRedis = await getRedis(`local-${id}`);
+    if (localsRedis) {
+      return JSON.parse(localsRedis);
+    } else {
+      return this.localsService.findOne(+id);
+    }
   }
 
   @Patch(':id')

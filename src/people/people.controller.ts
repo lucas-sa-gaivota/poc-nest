@@ -10,6 +10,7 @@ import {
 import { PeopleService } from './people.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
+import { getRedis } from 'src/infra/redis/redis.service';
 
 @Controller('people')
 export class PeopleController {
@@ -21,13 +22,23 @@ export class PeopleController {
   }
 
   @Get()
-  findAll() {
-    return this.peopleService.findAll();
+  async findAll() {
+    const peopleRedis = await getRedis(`people-all`);
+    if (peopleRedis) {
+      return JSON.parse(peopleRedis);
+    } else {
+      return this.peopleService.findAll();
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.peopleService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const peopleRedis = await getRedis(`people-${id}`);
+    if (peopleRedis) {
+      return JSON.parse(peopleRedis);
+    } else {
+      return this.peopleService.findOne(+id);
+    }
   }
 
   @Patch(':id')

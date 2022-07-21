@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/infra/prisma/prisma.service';
+import { setRedis } from 'src/infra/redis/redis.service';
 import { CreateLocalDto } from './dto/create-local.dto';
 import { UpdateLocalDto } from './dto/update-local.dto';
 import { Local } from './entities/local.entity';
@@ -18,11 +19,13 @@ export class LocalsService {
     const localCreated = await this.prismaService.local.create({
       data: local,
     });
+    await setRedis(`local-all`, null);
     return localCreated;
   }
 
   async findAll() {
     const locals = await this.prismaService.local.findMany();
+    await setRedis('local-all', JSON.stringify(locals));
     return locals;
   }
 
@@ -32,7 +35,7 @@ export class LocalsService {
         id: id,
       },
     });
-
+    await setRedis(`local-${id}`, JSON.stringify(local));
     return local;
   }
 
@@ -47,7 +50,7 @@ export class LocalsService {
       updateLocalDto.name,
       local.createBy,
       updateLocalDto.updatedBy,
-      local.createdAt,
+      updateLocalDto.clientId,
     ).get();
 
     const locals = await this.prismaService.local.updateMany({
@@ -57,8 +60,10 @@ export class LocalsService {
       data: {
         name: localInstantiated.name,
         updatedBy: localInstantiated.updatedBy,
+        clientId: localInstantiated.clientId,
       },
     });
+    await setRedis(`local-${id}`, null);
     return locals;
   }
 

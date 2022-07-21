@@ -3,4 +3,6 @@ export type UpdateClientDto = {
   name: string;
   clientTypeId: string;
   updatedBy: string;
+  people: number[];
+  locals: number[];
 };

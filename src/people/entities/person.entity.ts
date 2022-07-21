@@ -5,20 +5,22 @@ export class Person {
   private updatedAt: Date;
   private createBy: string;
   private updatedBy: string;
+  private clientId: number;
 
   constructor(
     name: string,
     documentNumber: string,
     createBy: string,
     updatedBy: string,
-    createdAt?: Date,
+    clientId?: number,
   ) {
     this.name = name;
     this.documentNumber = documentNumber;
-    this.createdAt = createdAt ? new Date(createdAt) : new Date();
+    this.createdAt = new Date();
     this.updatedAt = new Date();
     this.createBy = createBy;
     this.updatedBy = updatedBy;
+    this.clientId = clientId;
   }
 
   get() {
@@ -29,6 +31,7 @@ export class Person {
       updatedAt: this.updatedAt,
       createBy: this.createBy,
       updatedBy: this.updatedBy,
+      clientId: this.clientId,
     };
   }
 }

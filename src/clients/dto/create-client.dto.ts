@@ -3,4 +3,6 @@ export class CreateClientDto {
   clientTypeId: string;
   createBy: string;
   updatedBy: string;
+  people: number[];
+  locals: number[];
 }

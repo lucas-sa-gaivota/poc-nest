@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/infra/prisma/prisma.service';
+import { setRedis } from 'src/infra/redis/redis.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { Person } from './entities/person.entity';
@@ -19,11 +20,13 @@ export class PeopleService {
     const data = await this.prismaService.people.create({
       data: people.get(),
     });
+    await setRedis(`people-all`, null);
     return data;
   }
 
   async findAll() {
     const persons = await this.prismaService.people.findMany();
+    await setRedis('people-all', JSON.stringify(persons));
     return persons;
   }
 
@@ -33,7 +36,7 @@ export class PeopleService {
         id: id,
       },
     });
-
+    await setRedis(`people-${id}`, JSON.stringify(person));
     return person;
   }
 
@@ -49,7 +52,7 @@ export class PeopleService {
       updatePersonDto.documentNumber,
       people.createBy,
       updatePersonDto.updatedBy,
-      people.createdAt,
+      updatePersonDto.clientId,
     ).get();
 
     const persons = await this.prismaService.people.updateMany({
@@ -61,8 +64,10 @@ export class PeopleService {
         documentNumber: newPeopleData.documentNumber,
         updatedBy: newPeopleData.updatedBy,
         updatedAt: newPeopleData.updatedAt,
+        clientId: newPeopleData.clientId,
       },
     });
+    await setRedis(`people-${id}`, null);
     return persons;
   }
 
